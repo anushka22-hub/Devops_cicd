@@ -9,7 +9,7 @@ pipeline {
                 echo 'Retrieving source code from GitHub'
 
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/Devops_Exp.git'
+                    url: 'https://github.com/anushka22-hub/Devops_cicd.git'
             }
         }
 
@@ -20,10 +20,6 @@ pipeline {
                 bat '''
                     py -m venv .venv
                     .venv\\Scripts\\python.exe -m pip install -r requirements.txt
-
-                    if not exist dist mkdir dist
-
-                    powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path app.py,requirements.txt -DestinationPath dist\\rest-api.zip -Force"
                 '''
             }
         }
@@ -42,7 +38,13 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                echo 'Archiving generated artifacts'
+                echo 'Creating ZIP artifact'
+
+                bat '''
+                    if not exist dist mkdir dist
+
+                    powershell -NoProfile -ExecutionPolicy Bypass -Command "Compress-Archive -Path app.py,requirements.txt -DestinationPath dist\\rest-api.zip -Force"
+                '''
 
                 archiveArtifacts artifacts: 'dist/*.zip',
                                  fingerprint: true
